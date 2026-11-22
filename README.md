@@ -1,0 +1,87 @@
+
+<p align="center">
+	<img src="avatar.png" alt="Logo" width="160" />
+</p>
+
+<h1><p align='center' >VoiceTransl 聆译</p></h1>
+<div align=center><img src="https://img.shields.io/github/v/release/shinnpuru/VoiceTransl"/>   <img src="https://img.shields.io/github/release-date/shinnpuru/VoiceTransl"/>   <img src="https://img.shields.io/github/stars/shinnpuru/VoiceTransl"/></div>
+
+<p align="center">简体中文 | <a href="README_EN.md">English</a></p>
+
+> ### ⚠️ 这是修改分支，不是原版
+>
+> 本仓库是 [shinnpuru/VoiceTransl](https://github.com/shinnpuru/VoiceTransl) 的派生分支，**只提供 Windows CUDA 版**、**不附带模型权重**。
+>
+> **修复内容**
+> 1. 本地 Sakura **Qwen3** 模型翻译时约 13% 的句子输出为空、最终变成 `(Failed)原文`（`ん`、`あ`、`くっ` 这类短句几乎必挂）。
+>    根因是程序对本地接口无条件注入 `enable_thinking: false`，Qwen3 模板据此预填空 think 块，导致翻译专模直接 EOS。
+> 2. 听写被切成 3 字碎片（`先輩気` / `持ちい` / `い`），导致翻译又慢又错。根因是「听写句子长度」滑条在旧版从不生效，
+>    历史保存的极小值升级后被换算成 `--max-len` 真正生效了。
+> 3. 内置 `firered-vad.gguf`，不再因联网下载失败而 `CrispASR exited with code 1`。
+>
+> 另外新增「翻译完成后不保存原始字幕文件」开关（默认勾选），欢迎界面换图。
+>
+> 修复后 209 句样本 **0 失败**（原来 27 句）。详见 **[FIX_NOTES.md](FIX_NOTES.md)**（含模型下载地址与保存路径）。
+>
+> 之所以单独发一版：上游修复该问题的节奏较慢，而它会导致成片字幕大段缺失，等不了。改动仅 14 行，欢迎上游直接合并。
+
+VoiceTransl聆译是一站式离线AI视频字幕生成和翻译软件，支持Windows。从视频下载，音频提取，听写打轴，字幕翻译，视频合成，字幕总结各个环节为翻译者提供便利。本项目基于[Galtransl](https://github.com/xd2333/GalTransl)，采用GPLv3许可。
+
+## 特色
+
+* 支持多种翻译模型，包括在线模型（任意OpenAI兼容接口）和本地模型（Sakura、Galtransl及Ollama、Llamacpp）。
+* 支持AMD/NVIDIA/Intel GPU加速，翻译引擎支持调整显存占用。
+* 支持多种输入格式，包括音频、视频、SRT字幕。
+* 支持多种输出格式，包括SRT字幕、LRC字幕。
+* 支持多种语言，包括日语，英语，韩语，俄语，法语。
+* 使用CrispASR的Qwen3-ASR与强制对齐工作流生成带时间轴字幕。
+* 支持VAD（语音活动检测），自动识别音频中的语音段落。
+* 支持字典功能，可以自定义翻译字典，替换输入输出。
+* 支持世界书/台本输入，可以自定义翻译参考资料。
+* 支持从YouTube/Bilibili及媒体链接直接下载视频。
+* 支持文件和链接批量处理，自动识别文件类型。
+* 支持音频切分，字幕合并和视频合成。
+* 支持视频总结，将视频内容总结为带时间轴简短的文本。
+* 支持人声分离，将人声和伴奏分离，支持多种模型。
+
+<div align=center><img src="title.jpg" alt="title" style="width:512px;"/></div>
+
+## 在线镜像
+
+打开即用的AI翻译，与配置环境说拜拜，推荐大家使用优云智算算力租赁平台。万卡4090 超多好玩免费的镜像给大家免费体验,高性价比算力租赁平台,上市公司ucloud旗下，专业有保障。点击链接直达[镜像地址](https://www.compshare.cn/images/compshareImage-16qc028dgfoh?referral_code=1RFfR2FQ2FyEVRJMyrOn5d&ytag=GPU_YY-GH_simple)，使用说明请看
+[视频教程](https://b23.tv/qN9bDHi)。使用昕蒲邀请链接注册可得实名20增金+链接注册20+高校企业认证再得10，还可享95折，4090一小时只要1.98 ：[邀请链接](https://passport.compshare.cn/register?referral_code=1RFfR2FQ2FyEVRJMyrOn5d&ytag=simple_bilibili)
+
+## 下载地址
+
+下载最新版本的[VoiceTransl](https://github.com/shinnpuru/VoiceTransl/releases/)，解压后运行`VoiceTransl.exe`。
+
+## 使用说明
+
+使用说明请见 [视频教程](https://www.bilibili.com/video/BV12FjN6iEmz)。
+
+### 使用 Agent 完成听写与翻译
+
+下载 [Agent 技能包 voicetransl-cli-skill.zip](https://github.com/shinnpuru/VoiceTransl/releases/download/v1.31/voicetransl-cli-skill.zip)，将其中的 `voicetransl-cli` 文件夹解压到 `%USERPROFILE%\.codex\skills\`，保留完整的 `scripts` 子目录。其他支持技能的 Agent 也可读取包内的 `SKILL.md`，按照其中的流程执行任务。
+
+安装后，可以向 Agent 发送：
+
+```text
+使用 $voicetransl-cli，通过 F:\VoiceTransl 听写 D:\Media\sample.mp4，
+将日语翻译为简体中文，导出原文、译文和双语 SRT 到 D:\Media\output。
+```
+
+Agent 会直接调用打包版中的 FFmpeg、CrispASR、翻译和人声分离等命令行工具，无需启动 GUI。技能包含音频提取、听写打轴、翻译、字幕导出、长音频分段合并和结果检查的完整流程；已有 SRT 可以直接翻译。
+
+辅助脚本需要可用的 Python 3.10+，会检测并缓存已有解释器，后续任务直接复用，**不会每次创建 venv**。PyYAML 已随技能附带，普通本地听写翻译无需安装 Python 包；视频下载和摘要的额外依赖仅在缺失时安装一次。离线使用需准备相应模型，在线翻译需配置接口、模型和密钥。详细命令与环境配置见 [SKILL.md](SKILL.md)。
+
+## 声明
+
+本软件仅供学习交流使用，不得用于商业用途。本软件不对任何使用者的行为负责，不保证翻译结果的准确性。使用本软件即代表您同意自行承担使用本软件的风险，包括但不限于版权风险、法律风险等。请遵守当地法律法规，不要使用本软件进行任何违法行为。
+
+## 贡献者
+
+[shinnpuru](https://github.com/shinnpuru) [MurthiNext](https://github.com/MurthiNext) [chenflxs](https://github.com/chenflxs)
+
+## 如果对你有帮助的话请给一个Star!
+
+![Star History Chart](https://star-history.dera.page/svg?repos=shinnpuru/VoiceTransl&type=Date)
